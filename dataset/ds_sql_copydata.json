@@ -1,0 +1,45 @@
+{
+	"name": "ds_sql_copydata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sqlserver_param",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"param_servername": {
+					"value": "@dataset().param_severname",
+					"type": "Expression"
+				},
+				"param_dbname": {
+					"value": "@dataset().param_dbname",
+					"type": "Expression"
+				},
+				"param_username": {
+					"value": "@dataset().param_usernam",
+					"type": "Expression"
+				},
+				"param_password": {
+					"value": "@dataset().param_paswrd",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"param_severname": {
+				"type": "string"
+			},
+			"param_dbname": {
+				"type": "string"
+			},
+			"param_usernam": {
+				"type": "string"
+			},
+			"param_paswrd": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

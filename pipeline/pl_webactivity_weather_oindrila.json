@@ -1,0 +1,40 @@
+{
+	"name": "pl_webactivity_weather_oindrila",
+	"properties": {
+		"activities": [
+			{
+				"name": "find weather info of city",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@concat('http://api.weatherstack.com/current?access_key=',pipeline().parameters.param_accesskey,'&query=',pipeline().parameters.param_cityname)",
+						"type": "Expression"
+					},
+					"method": "GET"
+				}
+			}
+		],
+		"parameters": {
+			"param_cityname": {
+				"type": "string",
+				"defaultValue": "kolkata"
+			},
+			"param_accesskey": {
+				"type": "string",
+				"defaultValue": "7b1a503846c18a56136f8ab3c90d5017"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-17T11:31:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

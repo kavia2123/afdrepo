@@ -1,0 +1,58 @@
+{
+	"name": "Df_fl_csv",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Fixed_length_DS",
+						"type": "DatasetReference"
+					},
+					"name": "Stream"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Df_Sink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Column_1 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Stream",
+				"Stream derive(Emp_ID = substring(Column_1, 1, 6),",
+				"          Emp_name = substring(Column_1, 7, 13),",
+				"          Emp_STate = substring(Column_1, 20, 3),",
+				"          cont = substring(Column_1, 23, 10)) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          Emp_ID,",
+				"          Emp_name,",
+				"          Emp_STate,",
+				"          cont",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

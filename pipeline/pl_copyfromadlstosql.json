@@ -1,0 +1,133 @@
+{
+	"name": "pl_copyfromadlstosql",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copydataadlstosql",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*.csv",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_allinallsqltable1",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_container": {
+								"value": "@pipeline().parameters.param_container",
+								"type": "Expression"
+							},
+							"param_directory": {
+								"value": "@pipeline().parameters.param_directory",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_studentmarks_sqlserver",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_servername": {
+								"value": "@pipeline().parameters.param_sqlservername",
+								"type": "Expression"
+							},
+							"param_dbname": {
+								"value": "@pipeline().parameters.param_dbname",
+								"type": "Expression"
+							},
+							"param_username": {
+								"value": "@pipeline().parameters.param_username",
+								"type": "Expression"
+							},
+							"param_pasword": {
+								"value": "@pipeline().parameters.param_password",
+								"type": "Expression"
+							},
+							"param_schema": {
+								"value": "@pipeline().parameters.param_schema",
+								"type": "Expression"
+							},
+							"param_tablename": {
+								"value": "@pipeline().parameters.param_tablename",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"param_sqlservername": {
+				"type": "string",
+				"defaultValue": "prodcutdb123.database.windows.net"
+			},
+			"param_dbname": {
+				"type": "string",
+				"defaultValue": "kavia_db"
+			},
+			"param_username": {
+				"type": "string",
+				"defaultValue": "akshay"
+			},
+			"param_password": {
+				"type": "string",
+				"defaultValue": "Monkey@123"
+			},
+			"param_container": {
+				"type": "string",
+				"defaultValue": "nabuda"
+			},
+			"param_directory": {
+				"type": "string",
+				"defaultValue": "nabu"
+			},
+			"param_schema": {
+				"type": "string",
+				"defaultValue": "dbo"
+			},
+			"param_tablename": {
+				"type": "string",
+				"defaultValue": "studentmarks"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-18T10:05:22Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

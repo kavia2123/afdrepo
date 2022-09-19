@@ -1,0 +1,132 @@
+{
+	"name": "pl_copoyactivity_oindrila",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copydatasqltoblob",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@pipeline().parameters.param_query",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_sql_copydata",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_severname": {
+								"value": "@pipeline().parameters.param_servername",
+								"type": "Expression"
+							},
+							"param_dbname": {
+								"value": "@pipeline().parameters.param_dbname",
+								"type": "Expression"
+							},
+							"param_usernam": {
+								"value": "@pipeline().parameters.param_username",
+								"type": "Expression"
+							},
+							"param_paswrd": {
+								"value": "@pipeline().parameters.param_password",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_copydata_sink",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_container": {
+								"value": "@pipeline().parameters.param_container",
+								"type": "Expression"
+							},
+							"param_directory": {
+								"value": "@pipeline().parameters.param_directory",
+								"type": "Expression"
+							},
+							"param_file": {
+								"value": "@pipeline().parameters.param_file",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"param_servername": {
+				"type": "string",
+				"defaultValue": "prodcutdb123.database.windows.net"
+			},
+			"param_dbname": {
+				"type": "string",
+				"defaultValue": "kavia_db"
+			},
+			"param_username": {
+				"type": "string",
+				"defaultValue": "akshay"
+			},
+			"param_password": {
+				"type": "string",
+				"defaultValue": "Monkey@123"
+			},
+			"param_container": {
+				"type": "string",
+				"defaultValue": "sales-tbl-data"
+			},
+			"param_directory": {
+				"type": "string",
+				"defaultValue": "kavia"
+			},
+			"param_file": {
+				"type": "string",
+				"defaultValue": "kavia21"
+			},
+			"param_query": {
+				"type": "string",
+				"defaultValue": "select * from dbo.tbl_sales"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-18T07:16:35Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,42 @@
+{
+	"name": "DS_EmpDeptNew",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "EmpDeptNew.txt",
+				"folderPath": "input",
+				"fileSystem": "adfnew"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Emp_Id",
+				"type": "String"
+			},
+			{
+				"name": " E_name",
+				"type": "String"
+			},
+			{
+				"name": " E_country",
+				"type": "String"
+			},
+			{
+				"name": " E_dept",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

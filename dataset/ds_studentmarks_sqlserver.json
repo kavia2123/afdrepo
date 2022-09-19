@@ -1,0 +1,61 @@
+{
+	"name": "ds_studentmarks_sqlserver",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sqlserver_param",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"param_servername": {
+					"value": "@dataset().param_servername",
+					"type": "Expression"
+				},
+				"param_dbname": {
+					"value": "@dataset().param_dbname",
+					"type": "Expression"
+				},
+				"param_username": {
+					"value": "@dataset().param_username",
+					"type": "Expression"
+				},
+				"param_password": {
+					"value": "@dataset().param_pasword",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"param_servername": {
+				"type": "string"
+			},
+			"param_dbname": {
+				"type": "string"
+			},
+			"param_username": {
+				"type": "string"
+			},
+			"param_pasword": {
+				"type": "string"
+			},
+			"param_schema": {
+				"type": "string"
+			},
+			"param_tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().param_schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().param_tablename",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,38 @@
+{
+	"name": "pl_filter_oindrila",
+	"properties": {
+		"activities": [
+			{
+				"name": "Filter with letter L",
+				"type": "Filter",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.param_list_of_cities",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@startswith(item(), 'L')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"param_list_of_cities": {
+				"type": "array",
+				"defaultValue": [
+					"New york",
+					"London",
+					"tokyo",
+					"singapore city",
+					"lisbon"
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-15T14:23:09Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

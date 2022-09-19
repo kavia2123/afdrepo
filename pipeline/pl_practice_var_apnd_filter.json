@@ -1,0 +1,109 @@
+{
+	"name": "pl_practice_var_apnd_filter",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable for state name",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_state_name",
+					"value": {
+						"value": "@trim(split(split(pipeline().parameters.param_address_line,',')[2],':')[1])",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Append variable to list of states",
+				"type": "AppendVariable",
+				"dependsOn": [
+					{
+						"activity": "Set variable for state name",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_list_of_states",
+					"value": {
+						"value": "@variables('var_state_name')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "check_list_of_new_states",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Append variable to list of states",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_appended_state",
+					"value": {
+						"value": "@variables('var_list_of_states')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Filter only city ENDS WITH A",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "check_list_of_new_states",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('var_appended_state')",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@endswith(item(), 'A')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"param_address_line": {
+				"type": "string",
+				"defaultValue": "Address: 155/6, City: QUEPEM, State: GOA"
+			}
+		},
+		"variables": {
+			"var_state_name": {
+				"type": "String"
+			},
+			"var_list_of_states": {
+				"type": "Array",
+				"defaultValue": [
+					"hyd",
+					"blr",
+					"maa",
+					"bom"
+				]
+			},
+			"var_appended_state": {
+				"type": "Array"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-13T13:13:15Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

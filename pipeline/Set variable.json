@@ -1,0 +1,108 @@
+{
+	"name": "Set variable",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Var_City_Name",
+					"value": {
+						"value": "@trim(split(split(pipeline().parameters.Param_Addess_line,',')[1],':')[1])",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Append variable1",
+				"type": "AppendVariable",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_listofcities",
+					"value": {
+						"value": "@variables('Var_City_Name')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable2",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Append variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_appended-cities",
+					"value": {
+						"value": "@variables('var_listofcities')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Filter1",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Set variable2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('var_listofcities')",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@startswith(item(),'L')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"Param_Addess_line": {
+				"type": "string",
+				"defaultValue": "Address : 211, City : Quepem, State : Goa"
+			}
+		},
+		"variables": {
+			"Var_City_Name": {
+				"type": "String"
+			},
+			"var_listofcities": {
+				"type": "Array",
+				"defaultValue": [
+					"london",
+					"new york",
+					"tokyo"
+				]
+			},
+			"var_appended-cities": {
+				"type": "Array"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-15T14:23:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

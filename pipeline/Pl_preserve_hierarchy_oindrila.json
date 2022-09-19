@@ -1,0 +1,172 @@
+{
+	"name": "Pl_preserve_hierarchy_oindrila",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*.csv",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".csv"
+						}
+					},
+					"enableStaging": false,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Info",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "ls_blob",
+								"type": "LinkedServiceReference"
+							},
+							"path": "input/file"
+						}
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "prod_cat_code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "prod_cat_code",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "prod_cat",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "prod_cat",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "prod_sub_cat_code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "prod_sub_cat_code",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "prod_subcat",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "prod_subcat",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_input_nabuda",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_container": {
+								"value": "@pipeline().parameters.param_output_directory",
+								"type": "Expression"
+							},
+							"param_directory": {
+								"value": "@pipeline().parameters.param_input_directory",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_output_stage",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_container": {
+								"value": "@pipeline().parameters.param_outputcontainer",
+								"type": "Expression"
+							},
+							"param_directory": {
+								"value": "@pipeline().parameters.param_output_directory",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"param_inputcontainername": {
+				"type": "string",
+				"defaultValue": "nabuda"
+			},
+			"param_input_directory": {
+				"type": "string",
+				"defaultValue": "nabu"
+			},
+			"param_outputcontainer": {
+				"type": "string",
+				"defaultValue": "stage"
+			},
+			"param_output_directory": {
+				"type": "string",
+				"defaultValue": "output/output1"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-18T13:13:12Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

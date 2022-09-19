@@ -1,0 +1,64 @@
+{
+	"name": "Source",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmpNew_DS",
+						"type": "DatasetReference"
+					},
+					"name": "NewEmp"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "EMpTable_DS",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Emp_Id as integer,",
+				"          { Name} as string,",
+				"          { Country} as string,",
+				"          { Dept} as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> NewEmp",
+				"NewEmp alterRow(upsertIf(1==1)) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Emp_Id as integer,",
+				"          E_Name as string,",
+				"          Country as string,",
+				"          Dept as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['Emp_Id'],",
+				"     format: 'table',",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Emp_Id,",
+				"          E_Name = { Name},",
+				"          Country = { Country},",
+				"          Dept = { Dept}",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

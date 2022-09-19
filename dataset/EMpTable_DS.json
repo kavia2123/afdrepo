@@ -1,0 +1,36 @@
+{
+	"name": "EMpTable_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Emp_Id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "E_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "Country",
+				"type": "varchar"
+			},
+			{
+				"name": "Dept",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "New_Emp"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

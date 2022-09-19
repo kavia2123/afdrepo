@@ -1,0 +1,31 @@
+{
+	"name": "ds_output_stage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_NEW",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"param_container": {
+				"type": "string"
+			},
+			"param_directory": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "nabuda"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

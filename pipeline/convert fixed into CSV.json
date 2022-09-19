@@ -1,0 +1,37 @@
+{
+	"name": "convert fixed into CSV",
+	"properties": {
+		"activities": [
+			{
+				"name": "Fixed length to CSV",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Fixed length to CSV",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Learnings"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-15T14:23:09Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

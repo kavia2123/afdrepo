@@ -1,0 +1,77 @@
+{
+	"name": "RemoveDupRows",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_EmpDept",
+						"type": "DatasetReference"
+					},
+					"name": "EmpSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_EmpDeptNew",
+						"type": "DatasetReference"
+					},
+					"name": "EmpNewsource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_EmpDeptNew_SInk",
+						"type": "DatasetReference"
+					},
+					"name": "SInk"
+				}
+			],
+			"transformations": [
+				{
+					"name": "MergeBoth"
+				},
+				{
+					"name": "KeppUniqueRows"
+				},
+				{
+					"name": "SortEMpId"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Emp_Id as string,",
+				"          { E_name} as string,",
+				"          { E_country} as string,",
+				"          { E_dept} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EmpSource",
+				"source(output(",
+				"          Emp_Id as string,",
+				"          { E_name} as string,",
+				"          { E_country} as string,",
+				"          { E_dept} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EmpNewsource",
+				"EmpSource, EmpNewsource union(byName: true)~> MergeBoth",
+				"MergeBoth aggregate(groupBy(Emp_Id),",
+				"     each(match(name!=\"Emp_Id\"), $$ = first($$))) ~> KeppUniqueRows",
+				"KeppUniqueRows sort(asc(Emp_Id, false)) ~> SortEMpId",
+				"SortEMpId sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['AllEmpDeptSink.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SInk"
+			]
+		}
+	}
+}

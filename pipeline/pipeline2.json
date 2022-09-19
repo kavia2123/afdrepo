@@ -1,0 +1,135 @@
+{
+	"name": "pipeline2",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://azurekeyvault213.vault.azure.net/secrets/kv-sqlserver-pw/?Api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "http://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "Stored procedure1",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Web1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": {
+						"value": "@pipeline().parameters.param_sql_storedprocedure",
+						"type": "Expression"
+					},
+					"storedProcedureParameters": {
+						"ErrorLogID": {
+							"value": "",
+							"type": "Int64"
+						},
+						"ErrorTime": {
+							"value": "21-06-2022 9:00",
+							"type": "Datetime"
+						},
+						"UserName": {
+							"value": "ksjjs",
+							"type": "String"
+						},
+						"ErrorNumber": {
+							"value": "11",
+							"type": "Int64"
+						},
+						"Error severeity": {
+							"value": "111",
+							"type": "Int64"
+						},
+						"ErrorState": {
+							"value": "111",
+							"type": "Int16"
+						},
+						"ErrorProcedure": {
+							"value": "ddhb",
+							"type": "String"
+						},
+						"ErrorLine": {
+							"value": "22",
+							"type": "Int64"
+						},
+						"ErrorMessage": {
+							"value": "djjkds",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_sqlserver_param",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"param_servername": {
+							"value": "@pipeline().parameters.param_sqlservername",
+							"type": "Expression"
+						},
+						"param_dbname": {
+							"value": "@pipeline().parameters.param_sqlserver_database",
+							"type": "Expression"
+						},
+						"param_username": {
+							"value": "@pipeline().parameters.param_sqlserver_username",
+							"type": "Expression"
+						},
+						"param_password": {
+							"value": "@activity('Web1').output.value",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"param_sqlservername": {
+				"type": "string",
+				"defaultValue": "prodcutdb123.database.windows.net"
+			},
+			"param_sqlserver_database": {
+				"type": "string",
+				"defaultValue": "kavia_db"
+			},
+			"param_sqlserver_username": {
+				"type": "string",
+				"defaultValue": "akshay"
+			},
+			"param_sql_storedprocedure": {
+				"type": "string",
+				"defaultValue": "[dbo].[uspLogError]"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-17T11:44:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

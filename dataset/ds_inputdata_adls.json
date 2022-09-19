@@ -1,0 +1,20 @@
+{
+	"name": "ds_inputdata_adls",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "department.txt",
+				"folderPath": "input",
+				"fileSystem": "demodata"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,110 @@
+{
+	"name": "setvariable_oindrila",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set city name variable",
+				"description": "get the value of the property city from the pipeline parameter 'param_address_line' of string type.",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_city_name",
+					"value": {
+						"value": "@trim(split(split(pipeline().parameters.param_address_line, ',')[1],':')[1])",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Append city name to list of cities variable",
+				"type": "AppendVariable",
+				"dependsOn": [
+					{
+						"activity": "Set city name variable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_list_of_cities",
+					"value": {
+						"value": "@variables('var_city_name')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable with list of cities",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Append city name to list of cities variable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var_appended list of cities",
+					"value": {
+						"value": "@variables('var_list_of_cities')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Filter with letter T",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Set variable with list of cities",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('var_appended list of cities')",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@startswith(item(), 'T')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"param_address_line": {
+				"type": "string",
+				"defaultValue": "Address: 221 M.G. road, City: Kolkata, State: West Bengal"
+			}
+		},
+		"variables": {
+			"var_city_name": {
+				"type": "String"
+			},
+			"var_list_of_cities": {
+				"type": "Array",
+				"defaultValue": [
+					"New york",
+					"London",
+					"tokyo",
+					"singapore city"
+				]
+			},
+			"var_appended list of cities": {
+				"type": "Array"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-13T12:51:21Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

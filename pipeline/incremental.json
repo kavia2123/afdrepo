@@ -1,0 +1,37 @@
+{
+	"name": "incremental",
+	"properties": {
+		"activities": [
+			{
+				"name": "Incremental Key Load",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "IncrementalKeyLoad",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Learnings"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-17T19:25:10Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

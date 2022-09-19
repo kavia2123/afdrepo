@@ -1,0 +1,47 @@
+{
+	"name": "pl_getmetadate_singlefile_oindrila",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Metadata of folder",
+				"description": "Get the following metadata information of the file, pointed to the \"case_deaths_uk_ind_only (2).csv\" file present inside the directory\"\"inside the container \"raw\" \necdc\n1.column count\n2.name\n3.item\n4-itemtyp\n5.lastmodified\n5.size\n6.structr",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_raw_ecdc",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"columnCount",
+						"exists",
+						"itemName",
+						"itemType",
+						"lastModified",
+						"size",
+						"structure"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-09-18T14:47:56Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

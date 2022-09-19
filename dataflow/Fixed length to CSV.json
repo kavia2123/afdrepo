@@ -1,0 +1,60 @@
+{
+	"name": "Fixed length to CSV",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Fixed_length_DS",
+						"type": "DatasetReference"
+					},
+					"name": "emp"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Fixed_to_CSV",
+						"type": "DatasetReference"
+					},
+					"name": "sinktooutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "deleteextracolumn"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Column_1 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> emp",
+				"emp derive(Emp_Id = substring(Column_1, 1, 4),",
+				"          Emp_Name = substring(Column_1, 5, 10),",
+				"          Emp_State = substring(Column_1, 15, 2),",
+				"          Emp_Cont = substring(Column_1, 17, 10)) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          Emp_Id,",
+				"          Emp_Name,",
+				"          Emp_State,",
+				"          Emp_Cont",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> deleteextracolumn",
+				"deleteextracolumn sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Emp_details'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinktooutput"
+			]
+		}
+	}
+}
