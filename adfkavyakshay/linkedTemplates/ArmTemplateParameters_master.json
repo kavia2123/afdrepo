@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adfkavyakshay"
+		},
+		"LS_ADLS_accountKey": {
+			"value": ""
+		},
+		"LS_ADLS_NEW_accountKey": {
+			"value": ""
+		},
+		"LS_SQL_connectionString": {
+			"value": ""
+		},
+		"Oracledb_connectionString": {
+			"value": ""
+		},
+		"ls_adls_allinone_accountKey": {
+			"value": ""
+		},
+		"ls_blob_connectionString": {
+			"value": ""
+		},
+		"ls_sqlserver_param_connectionString": {
+			"value": ""
+		},
+		"LS_ADLS_properties_typeProperties_url": {
+			"value": "https://adlskavyaskahay.dfs.core.windows.net/"
+		},
+		"LS_ADLS_NEW_properties_typeProperties_url": {
+			"value": "https://adlskavyaskahay.dfs.core.windows.net/"
+		},
+		"ls_adls_allinone_properties_typeProperties_url": {
+			"value": "https://adlskavyaskahay.dfs.core.windows.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

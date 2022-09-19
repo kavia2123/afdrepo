@@ -1,0 +1,1032 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adfkavyakshay"
+		},
+		"LS_ADLS_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS'"
+		},
+		"LS_ADLS_NEW_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_NEW'"
+		},
+		"LS_SQL_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_SQL'"
+		},
+		"ls_adls_allinone_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_adls_allinone'"
+		},
+		"ls_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_blob'"
+		},
+		"ls_sqlserver_param_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_sqlserver_param'"
+		},
+		"LS_ADLS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlskavyaskahay.dfs.core.windows.net/"
+		},
+		"LS_ADLS_NEW_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlskavyaskahay.dfs.core.windows.net/"
+		},
+		"ls_adls_allinone_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlskavyaskahay.dfs.core.windows.net/"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Pl_ifcondition_findthecity')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@contains(pipeline().parameters.param_listofcities,pipeline().parameters.param_cityname)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Set variable2",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "var_cityname",
+										"value": "DID NOT FIND THE CITY"
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Set variable1",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "var_cityname",
+										"value": "FOUND THE CITY"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"param_listofcities": {
+						"type": "array",
+						"defaultValue": [
+							"london",
+							"tokyo",
+							"singapore city"
+						]
+					},
+					"param_cityname": {
+						"type": "string",
+						"defaultValue": "usa"
+					}
+				},
+				"variables": {
+					"var_cityname": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Set variable')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "Var_City_Name",
+							"value": {
+								"value": "@trim(split(split(pipeline().parameters.Param_Addess_line,',')[1],':')[1])",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Append variable1",
+						"type": "AppendVariable",
+						"dependsOn": [
+							{
+								"activity": "Set variable1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_listofcities",
+							"value": {
+								"value": "@variables('Var_City_Name')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set variable2",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Append variable1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_appended-cities",
+							"value": {
+								"value": "@variables('var_listofcities')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Filter1",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "Set variable2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('var_listofcities')",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@startswith(item(),'L')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"Param_Addess_line": {
+						"type": "string",
+						"defaultValue": "Address : 211, City : Quepem, State : Goa"
+					}
+				},
+				"variables": {
+					"Var_City_Name": {
+						"type": "String"
+					},
+					"var_listofcities": {
+						"type": "Array",
+						"defaultValue": [
+							"london",
+							"new york",
+							"tokyo"
+						]
+					},
+					"var_appended-cities": {
+						"type": "Array"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-09-15T14:23:39Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_filter_oindrila')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Filter with letter L",
+						"type": "Filter",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().parameters.param_list_of_cities",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@startswith(item(), 'L')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"param_list_of_cities": {
+						"type": "array",
+						"defaultValue": [
+							"New york",
+							"London",
+							"tokyo",
+							"singapore city",
+							"lisbon"
+						]
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-09-15T14:23:09Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_practice_var_apnd_filter')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set variable for state name",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_state_name",
+							"value": {
+								"value": "@trim(split(split(pipeline().parameters.param_address_line,',')[2],':')[1])",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Append variable to list of states",
+						"type": "AppendVariable",
+						"dependsOn": [
+							{
+								"activity": "Set variable for state name",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_list_of_states",
+							"value": {
+								"value": "@variables('var_state_name')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "check_list_of_new_states",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Append variable to list of states",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_appended_state",
+							"value": {
+								"value": "@variables('var_list_of_states')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Filter only city ENDS WITH A",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "check_list_of_new_states",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('var_appended_state')",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@endswith(item(), 'A')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"param_address_line": {
+						"type": "string",
+						"defaultValue": "Address: 155/6, City: QUEPEM, State: GOA"
+					}
+				},
+				"variables": {
+					"var_state_name": {
+						"type": "String"
+					},
+					"var_list_of_states": {
+						"type": "Array",
+						"defaultValue": [
+							"hyd",
+							"blr",
+							"maa",
+							"bom"
+						]
+					},
+					"var_appended_state": {
+						"type": "Array"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-09-13T13:13:15Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_webactivity_weather_oindrila')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "find weather info of city",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@concat('http://api.weatherstack.com/current?access_key=',pipeline().parameters.param_accesskey,'&query=',pipeline().parameters.param_cityname)",
+								"type": "Expression"
+							},
+							"method": "GET",
+							"headers": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"param_cityname": {
+						"type": "string",
+						"defaultValue": "kolkata"
+					},
+					"param_accesskey": {
+						"type": "string",
+						"defaultValue": "7b1a503846c18a56136f8ab3c90d5017"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-09-17T11:31:55Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/setvariable_oindrila')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Set city name variable",
+						"description": "get the value of the property city from the pipeline parameter 'param_address_line' of string type.",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_city_name",
+							"value": {
+								"value": "@trim(split(split(pipeline().parameters.param_address_line, ',')[1],':')[1])",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Append city name to list of cities variable",
+						"type": "AppendVariable",
+						"dependsOn": [
+							{
+								"activity": "Set city name variable",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_list_of_cities",
+							"value": {
+								"value": "@variables('var_city_name')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Set variable with list of cities",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Append city name to list of cities variable",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "var_appended list of cities",
+							"value": {
+								"value": "@variables('var_list_of_cities')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Filter with letter T",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "Set variable with list of cities",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('var_appended list of cities')",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@startswith(item(), 'T')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"param_address_line": {
+						"type": "string",
+						"defaultValue": "Address: 221 M.G. road, City: Kolkata, State: West Bengal"
+					}
+				},
+				"variables": {
+					"var_city_name": {
+						"type": "String"
+					},
+					"var_list_of_cities": {
+						"type": "Array",
+						"defaultValue": [
+							"New york",
+							"London",
+							"tokyo",
+							"singapore city"
+						]
+					},
+					"var_appended list of cities": {
+						"type": "Array"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-09-13T12:51:21Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_ADLS_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADLS_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS_NEW')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_ADLS_NEW_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADLS_NEW_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_SQL')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_SQL_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_adls_allinone')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_adls_allinone_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_adls_allinone_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_blob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_blob_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_sqlserver_param')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"param_servername": {
+						"type": "string"
+					},
+					"param_dbname": {
+						"type": "string"
+					},
+					"param_username": {
+						"type": "string"
+					},
+					"param_password": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_sqlserver_param_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/self-hosted-sql-server')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/selfhostedir')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Web1",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://azurekeyvault213.vault.azure.net/secrets/kv-sqlserver-pw/?Api-version=7.0",
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"type": "MSI",
+								"resource": "http://vault.azure.net"
+							}
+						}
+					},
+					{
+						"name": "Stored procedure1",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Web1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": {
+								"value": "@pipeline().parameters.param_sql_storedprocedure",
+								"type": "Expression"
+							},
+							"storedProcedureParameters": {
+								"ErrorLogID": {
+									"value": "",
+									"type": "Int64"
+								},
+								"ErrorTime": {
+									"value": "21-06-2022 9:00",
+									"type": "Datetime"
+								},
+								"UserName": {
+									"value": "ksjjs",
+									"type": "String"
+								},
+								"ErrorNumber": {
+									"value": "11",
+									"type": "Int64"
+								},
+								"Error severeity": {
+									"value": "111",
+									"type": "Int64"
+								},
+								"ErrorState": {
+									"value": "111",
+									"type": "Int16"
+								},
+								"ErrorProcedure": {
+									"value": "ddhb",
+									"type": "String"
+								},
+								"ErrorLine": {
+									"value": "22",
+									"type": "Int64"
+								},
+								"ErrorMessage": {
+									"value": "djjkds",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_sqlserver_param",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"param_servername": {
+									"value": "@pipeline().parameters.param_sqlservername",
+									"type": "Expression"
+								},
+								"param_dbname": {
+									"value": "@pipeline().parameters.param_sqlserver_database",
+									"type": "Expression"
+								},
+								"param_username": {
+									"value": "@pipeline().parameters.param_sqlserver_username",
+									"type": "Expression"
+								},
+								"param_password": {
+									"value": "@activity('Web1').output.value",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"param_sqlservername": {
+						"type": "string",
+						"defaultValue": "prodcutdb123.database.windows.net"
+					},
+					"param_sqlserver_database": {
+						"type": "string",
+						"defaultValue": "kavia_db"
+					},
+					"param_sqlserver_username": {
+						"type": "string",
+						"defaultValue": "akshay"
+					},
+					"param_sql_storedprocedure": {
+						"type": "string",
+						"defaultValue": "[[dbo].[uspLogError]"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-09-17T11:44:55Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_sqlserver_param')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ADLS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Product_Category_Subcategory.csv",
+						"fileSystem": "staging"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_EmpDept')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "EmpDept.txt",
+						"folderPath": "input",
+						"fileSystem": "adfnew"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Emp_Id",
+						"type": "String"
+					},
+					{
+						"name": " E_name",
+						"type": "String"
+					},
+					{
+						"name": " E_country",
+						"type": "String"
+					},
+					{
+						"name": " E_dept",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_EmpDeptNew')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "EmpDeptNew.txt",
+						"folderPath": "input",
+						"fileSystem": "adfnew"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Emp_Id",
+						"type": "String"
+					},
+					{
+						"name": " E_name",
+						"type": "String"
+					},
+					{
+						"name": " E_country",
+						"type": "String"
+					},
+					{
+						"name": " E_dept",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_EmpDeptNew_SInk')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "sink",
+						"fileSystem": "increment"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_EmpId')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "EDept.txt",
+						"folderPath": "source",
+						"fileSystem": "increment"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Id",
+						"type": "String"
+					},
+					{
+						"name": " Name",
+						"type": "String"
+					},
+					{
+						"name": " Gender",
+						"type": "String"
+					},
+					{
+						"name": " Dept",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS')]"
+			]
+		}
+	]
+}
