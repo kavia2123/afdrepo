@@ -1,0 +1,63 @@
+{
+	"name": "pipeline4",
+	"properties": {
+		"activities": [
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(pipeline().parameters.param_listofcities,pipeline().parameters.param_cityname)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Set variable2",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "var_cityname",
+								"value": "DID NOT FIND THE CITY"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "var_cityname",
+								"value": "FOUND THE CITY"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"param_listofcities": {
+				"type": "array",
+				"defaultValue": [
+					"london",
+					"tokyo",
+					"singapore city"
+				]
+			},
+			"param_cityname": {
+				"type": "string",
+				"defaultValue": "usa"
+			}
+		},
+		"variables": {
+			"var_cityname": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
