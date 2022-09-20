@@ -1,5 +1,5 @@
 {
-	"name": "ds_adls_dept",
+	"name": "ds_adls_inremnt",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_ADLS",
@@ -10,24 +10,14 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "input",
-				"fileSystem": "demodata"
+				"folderPath": "newincremnt",
+				"fileSystem": "increment"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "depid",
-				"type": "String"
-			},
-			{
-				"name": "depname",
-				"type": "String"
-			}
-		]
-	},
-	"type": "Microsoft.DataFactory/factories/datasets"
+		"schema": []
+	}
 }
