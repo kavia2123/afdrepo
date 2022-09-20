@@ -1,0 +1,17 @@
+{
+	"name": "ls_Sql_onprem",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=True;data source=KAVIA21\\SQLEXPRESS;initial catalog=AdventureWorks2019",
+			"userName": "KAVIA21",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJkNWE5YTlhNy1lMGU3LTQ4OWItYmZmNy1hMWQ1Nzk2MGNmOTQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "sef-hosted-ir",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
