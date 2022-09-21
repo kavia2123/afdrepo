@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "pipeline3",
+					"referenceName": "pl_pipelinelog",
 					"type": "PipelineReference"
 				}
 			}
@@ -16,7 +16,7 @@
 			"recurrence": {
 				"frequency": "Day",
 				"interval": 1,
-				"startTime": "2022-09-21T05:04:00Z",
+				"startTime": "2022-09-21T05:07:00Z",
 				"timeZone": "UTC"
 			}
 		}
