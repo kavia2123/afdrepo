@@ -1,0 +1,69 @@
+{
+	"name": "df_removeduplicaterows",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_blob_input",
+						"type": "DatasetReference"
+					},
+					"name": "employeesource"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_blob_input_new",
+						"type": "DatasetReference"
+					},
+					"name": "employeeNEW"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Ds_adfdemo_output",
+						"type": "DatasetReference"
+					},
+					"name": "FINALEMPLOYEEDATA"
+				}
+			],
+			"transformations": [
+				{
+					"name": "union1"
+				},
+				{
+					"name": "RemoveDuplicateRows",
+					"description": "RemoveDuplicateRows."
+				},
+				{
+					"name": "sortEmpIdAsc"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> employeesource",
+				"source(output(",
+				"          empid as string,",
+				"          name as string,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> employeeNEW",
+				"employeesource, employeeNEW union(byName: true)~> union1",
+				"union1 aggregate(groupBy(empid),",
+				"     each(match(name!='empid'), $$ = first($$))) ~> RemoveDuplicateRows",
+				"RemoveDuplicateRows sort(asc(empid, true)) ~> sortEmpIdAsc",
+				"sortEmpIdAsc sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['employeeData'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> FINALEMPLOYEEDATA"
+			]
+		}
+	}
+}

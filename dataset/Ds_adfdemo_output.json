@@ -1,5 +1,5 @@
 {
-	"name": "ds_blob_input",
+	"name": "Ds_adfdemo_output",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_blob",
@@ -10,8 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "employee.csv",
-				"folderPath": "input",
+				"folderPath": "output",
 				"container": "adfdemo"
 			},
 			"columnDelimiter": ",",
