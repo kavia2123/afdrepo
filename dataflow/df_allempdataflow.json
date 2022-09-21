@@ -1,0 +1,107 @@
+{
+	"name": "df_allempdataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_input_allEmp",
+						"type": "DatasetReference"
+					},
+					"name": "allemployees"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_adfdemo_data",
+						"type": "DatasetReference"
+					},
+					"name": "NewEmployees"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_updatedemplyees",
+						"type": "DatasetReference"
+					},
+					"name": "Updatedemployees"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "union1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID as integer,",
+				"          NAME as string,",
+				"          GENDER as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> allemployees",
+				"source(output(",
+				"          NAME as string,",
+				"          GENDER as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> NewEmployees",
+				"allemployees derive(dummy = 'dummy') ~> derivedColumn1",
+				"derivedColumn1 aggregate(groupBy(dummy),",
+				"     MaxId = max(ID)) ~> aggregate1",
+				"aggregate1, NewEmployees join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 keyGenerate(output(ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 derive(ID = toInteger(ID) + toInteger(MaxId)) ~> derivedColumn2",
+				"derivedColumn2 select(mapColumn(",
+				"          ID,",
+				"          NAME,",
+				"          GENDER,",
+				"          DEPARTMENT",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"allemployees, select2 union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          NAME as string,",
+				"          GENDER as string,",
+				"          DEPARTMENT as string",
+				"     ),",
+				"     partitionFileNames:['AllEmployee.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> Updatedemployees"
+			]
+		}
+	}
+}
